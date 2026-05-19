@@ -22,44 +22,48 @@ import {
 const cn = (...classes) => classes.filter(Boolean).join(" ");
 
 const defaultForm = {
-  name: "paper-review-assistant",
+  name: "activity-report-assistant",
   description:
-    "Use when the user provides an academic paper, abstract, or research notes and wants a structured academic summary, critique, or discussion guide. Do not use for casual news summaries or pure translation tasks.",
-  purpose: "協助使用者把論文整理成可討論、可報告、可追蹤的結構化摘要。",
-  useWhen: `- 使用者提供論文全文、摘要或研究筆記
-- 使用者想萃取研究問題、方法、資料、發現與限制
-- 使用者想產生課堂討論問題`,
-  doNotUse: `- 一般新聞摘要
-- 單純翻譯
-- 沒有學術文本或研究資料的閒聊問題`,
-  inputs: `- 論文全文、摘要或 PDF
-- 課程主題或指定的分析重點
-- 需要的輸出語言與長度`,
-  workflow: `1. 判斷文本是否為學術研究或研究型資料。
-2. 找出研究主題、研究問題與研究目的。
-3. 辨識理論、方法、資料來源與分析策略。
-4. 摘要主要發現，並標示哪些是作者主張、哪些是推論。
-5. 指出限制、假設與可討論之處。
-6. 依固定格式輸出摘要、批判與討論題。`,
-  output: `### 1. 基本資訊
-- 題名：
-- 領域：
-- 主題：
+    "Use when the user needs to create or revise an activity outcome report from provided event details, report templates, photo lists, Padlet exports, attendance files, or related documents. Do not use when the user asks for unrelated document writing, asks Codex to guess missing personal data, or wants direct upload/delete actions without explicit confirmation.",
+  purpose: "協助老師把活動資料、照片清單、Padlet 匯出與學校格式整理成可檢查的成果報告初稿。",
+  useWhen: `- 使用者提供活動日期、活動名稱、照片資料夾、Padlet 匯出檔或成果報告格式
+- 使用者想整理活動證據、附件清單、照片說明與待補資料
+- 使用者想依固定格式產生成果報告初稿、v2 或 final 版`,
+  doNotUse: `- 沒有任何活動資料，卻要求直接編造成果
+- 要求辨識學生姓名、個資或未授權人物資訊
+- 要求直接登入、刪除、上傳雲端或替使用者完成授權操作`,
+  inputs: `- 活動基本資料：名稱、日期、地點、主辦單位、參與對象
+- 成果報告範本或學校格式
+- 照片資料夾、照片檔名清單或精選照片
+- Padlet 匯出的 PDF、Excel、CSV 或附件清單
+- 老師修正意見與版本需求`,
+  workflow: `1. 先檢查 project 資料夾與輸入檔案，列出可用資料與缺漏資料。
+2. 萃取活動基本資料、活動目的、流程、成果、參與狀況與附件證據。
+3. 整理照片與 Padlet 資料，只描述可由檔案或文字確認的內容。
+4. 對照成果報告格式，建立初稿、照片說明、附件清單與待補資料清單。
+5. 若資料不足，先列出待補問題，不得編造日期、人名、成果或數字。
+6. 依老師修正意見產生 v2 或 final 版，並列出本次修改重點。`,
+  output: `### 1. 活動基本資料
+- 活動名稱：
+- 日期：
+- 地點：
+- 主辦單位：
+- 參與對象：
 
-### 2. 研究問題
+### 2. 活動目的與流程
 
-### 3. 方法與資料
+### 3. 活動成果
 
-### 4. 主要發現
+### 4. 照片與附件說明
 
-### 5. 限制與批判
+### 5. 待補資料清單
 
-### 6. 課堂討論題`,
-  quality: `- 不得捏造文本中不存在的資訊
-- 不確定處必須明確標示
-- 摘要與批判必須分開
-- 格式必須一致
-- 若輸入不足，先提出最少必要追問`,
+### 6. 版本紀錄`,
+  quality: `- 不得編造缺漏資料或猜測照片中的人名
+- 必須明確列出使用到的來源檔案
+- 初稿、修正版與 final 版要能區分
+- 缺資料時要產生待補資料清單
+- 上傳、刪除、登入與雲端操作必須等待使用者明確確認`,
 };
 
 const lessonPlan = [
@@ -107,10 +111,10 @@ const quizItems = [
     why: "涉及帳號、授權、上傳、刪除與敏感資料時，必須由使用者本人確認，不能把密碼或驗證資訊交給 AI。",
   },
   {
-    q: "什麼時候才適合把流程保存成 Skill？",
+    q: "什麼時候才適合用 skill-creator 把流程保存成 Skill？",
     options: ["第一次想到任務就立刻保存", "流程已跑過、修正過、下次還會用", "還不知道輸入資料是什麼", "只想閒聊一次"],
     answer: 1,
-    why: "Skill 是成熟流程的保存方式。先把操作跑通，再把成功做法保存下來，學員比較不會被格式細節干擾。",
+    why: "skill-creator 適合放在延伸階段。先把操作跑通，再請 Codex 使用 skill-creator 把成功做法整理成可重複使用的 Skill。",
   },
 ];
 
@@ -119,7 +123,7 @@ const rubric = [
   ["任務描述", "20%", "能否把要 Codex 做的事說清楚，包含輸入、輸出與格式。"],
   ["成果檢查", "25%", "是否會看 Review / diff，並確認檔名、內容、格式與缺資料清單。"],
   ["修正流程", "20%", "是否能提出具體修正意見，產生 v1、v2、final 的版本感。"],
-  ["流程保存", "15%", "是否能說明哪些步驟下次還會用，適合之後保存成 Skill。"],
+  ["流程保存", "15%", "是否能說明哪些步驟下次還會用，並知道可用 skill-creator 作為延伸來建立 Skill。"],
 ];
 
 const narrationScripts = {
@@ -128,11 +132,11 @@ const narrationScripts = {
   desktop:
     "這一頁先回答新手最重要的問題：Codex Desktop 到底能做什麼？它可以讀你指定資料夾中的檔案，幫你建立或修改教材、報告、網頁與檢查清單；也可以依你的要求啟動本機網頁、跑檢查、整理錯誤訊息，並在需要時打開瀏覽器協助確認畫面。接著才認識介面：Project 是工作資料夾，Threads 是不同任務，Composer 是輸入任務的地方，Review 或 diff 是檢查修改結果的位置。請記住基本口訣：先選乾淨資料夾，再下小任務，先看修改，再決定是否接受。",
   basics:
-    "這一頁是延伸內容：當一套操作流程已經跑順、修正過，而且下次還會再用，就可以請 Codex 幫你把它保存成 Skill。新手不需要背格式，也不需要手寫技術細節；你只要看懂三件事：這個流程叫什麼名字，什麼時候該用，實際操作步驟是什麼。課堂上老師可以示範一次，學員先以看懂與會檢查為主。",
+    "這一頁是延伸內容：當一套操作流程已經跑順、修正過，而且下次還會再用，就可以請 Codex 幫你把它保存成 Skill。新手不需要背格式，也不需要手寫技術細節；你只要看懂三件事：這個流程叫什麼名字，什麼時候該用，實際操作步驟是什麼。老師示範時可以直接請 Codex 使用 skill-creator skill，協助建立成果報告 skill；學員先以看懂 prompt、會檢查內容、知道何時不該保存為主。",
   workflow:
     "這一頁是流程設計器。先不要急著寫 Skill，請先描述你自己原本如何完成這個任務。好的 Skill 來自清楚的人工流程。每個步驟最好用動詞開頭，例如檢查、萃取、比較、驗證、輸出。你新增每個流程步驟時，都要回答三個問題：這一步需要什麼輸入？這一步會產生什麼輸出？如果資料不足、格式錯誤或任務不適合，應該怎麼處理？完成本頁後，你應該有一個可操作、可檢查、可轉寫成 SKILL.md 的 workflow。",
   generator:
-    "這一頁是流程保存範本。你可以把已經跑順的工作流程填進左側表單，右側會產生可以交給 Codex 使用的 Skill 草稿。新手不用背英文欄位，只要檢查內容是否說清楚：什麼時候使用、需要哪些資料、照哪些步驟做、最後輸出什麼、資料不足時要怎麼提醒。這一頁可以當作老師示範或進階自學，不必在第一堂課全部講完。",
+    "這一頁是流程保存範本。你可以把已經跑順的工作流程填進左側表單，右側會產生可以交給 Codex 或 skill-creator 使用的 Skill 草稿。新手不用背英文欄位，只要檢查內容是否說清楚：什麼時候使用、需要哪些資料、照哪些步驟做、最後輸出什麼、資料不足時要怎麼提醒。這一頁可以當作老師示範或進階自學，不必在第一堂課全部講完。",
   testing:
     "這一頁是成果檢查。請不要把 Codex 的第一版結果直接當完成品。你要檢查四件事：檔案是否建立在正確資料夾，內容是否符合任務，缺資料有沒有列出來，修正後版本是否清楚。若你已經把流程保存成 Skill，再用幾個真實情境測試它是否會在適合的任務中被使用。",
   quiz:
@@ -187,6 +191,7 @@ const pageGuides = {
     teacherMoves: [
       "先說明：Skill 是之後保存流程用，第一輪操作不必急著做。",
       "對照範例，只看懂名稱、使用時機、操作步驟三件事。",
+      "用延伸示範說明：可以請 Codex 使用 skill-creator skill 建立 skill，學員不用手寫格式。",
       "提醒學員：格式可以請 Codex 產生，老師只要能檢查內容是否合理。",
     ],
     learnerActions: [
@@ -197,6 +202,7 @@ const pageGuides = {
     checkpoints: [
       "你知道 Skill 不是第一步，而是成熟流程的保存方式。",
       "你能看懂一個 Skill 草稿是否把任務說清楚。",
+      "你知道 skill-creator 是建立 skill 的延伸工具，不是本課一開始就要做的主任務。",
       "你知道新手不需要手寫技術格式，可以請 Codex 協助產生。",
     ],
     transition: "知道 Skill 的位置後，下一步回到操作本身：先把人的流程拆清楚。",
@@ -228,6 +234,7 @@ const pageGuides = {
       "提醒學員：這是進階保存，不是第一輪操作必備。",
       "先填中文目的、使用情境、需要資料、操作步驟與輸出格式。",
       "檢查右側草稿是否能讓下次的 Codex 照流程工作。",
+      "示範把右側草稿交給 skill-creator，請 Codex 建立並驗證 skill。",
     ],
     learnerActions: [
       "填入名稱、使用情境、何時不用、必要輸入。",
@@ -605,6 +612,54 @@ Write clear steps, expected inputs, output format, quality standards, and what t
         <Card>
           <h4 className="font-bold text-slate-950">3. 操作步驟</h4>
           <p className="mt-2 text-sm leading-6 text-slate-600">放輸入資料、處理步驟、輸出格式、品質標準，以及缺資料時要怎麼提醒。</p>
+        </Card>
+      </div>
+
+      <div className="mt-8 grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
+        <Card className="border-indigo-100 bg-indigo-50/50">
+          <div className="mb-3 inline-flex rounded-full bg-white px-3 py-1 text-xs font-bold text-indigo-700 ring-1 ring-indigo-100">
+            選做延伸
+          </div>
+          <h3 className="text-xl font-bold text-slate-950">用 skill-creator 建立成果報告 skill</h3>
+          <p className="mt-3 text-sm leading-6 text-slate-700">
+            這段不是主課程第一步，而是老師示範：當成果報告流程已經跑順，可以直接請 Codex 使用 <strong>skill-creator skill</strong> 來建立可重複使用的 skill。
+          </p>
+          <div className="mt-5 space-y-3 text-sm leading-6 text-slate-700">
+            <div className="rounded-xl bg-white p-3 ring-1 ring-indigo-100"><strong>1. 先給具體案例：</strong>成果報告、照片資料夾、Padlet 匯出、修正意見。</div>
+            <div className="rounded-xl bg-white p-3 ring-1 ring-indigo-100"><strong>2. 請它規劃資源：</strong>哪些內容放 SKILL.md，哪些範本放 assets 或 references。</div>
+            <div className="rounded-xl bg-white p-3 ring-1 ring-indigo-100"><strong>3. 讓它建立 skill：</strong>由 Codex 初始化資料夾、編寫 SKILL.md，必要時加入範本。</div>
+            <div className="rounded-xl bg-white p-3 ring-1 ring-indigo-100"><strong>4. 最後驗證：</strong>請 Codex 檢查格式、使用時機、缺資料處理與不該觸發的情境。</div>
+          </div>
+        </Card>
+        <Card>
+          <h3 className="mb-4 flex items-center gap-2 font-bold text-slate-950">
+            <Sparkles className="h-5 w-5 text-indigo-600" /> 可直接複製的示範 prompt
+          </h3>
+          <CodeBlock
+            title="skill-creator prompt"
+            code={`請使用 skill-creator skill，協助我建立一個 Codex skill。
+
+Skill 名稱：
+activity-report-assistant
+
+放置位置：
+如果沒有特別設定，請放在 Codex 可以自動發現的 skills 資料夾。
+
+這個 skill 要解決的問題：
+老師在活動結束後，需要把活動基本資料、照片資料夾、Padlet 匯出檔、附件清單與學校成果報告格式，整理成可檢查的成果報告初稿。
+
+請依照 skill-creator 的流程進行：
+1. 先用 2 到 3 個具體使用案例確認這個 skill 的範圍。
+2. 規劃需要放進 SKILL.md、references、assets 的內容。
+3. 建立 skill 資料夾與 SKILL.md。
+4. 不要加入不必要的 README 或教學文件。
+5. 完成後請驗證 skill 格式，並列出我應該人工檢查的重點。
+
+安全限制：
+- 不要猜測照片中的人名或個資。
+- 不要直接登入、刪除、上傳雲端或替我完成授權操作。
+- 缺資料時要列出待補資料清單。`}
+          />
         </Card>
       </div>
     </div>
@@ -1030,6 +1085,15 @@ function GeneratorTab() {
         </div>
         <div className="sticky top-6 self-start">
           <CodeBlock code={generated} />
+          <Card className="mt-4 border-emerald-100 bg-emerald-50/60">
+            <h3 className="font-bold text-slate-950">交給 skill-creator 的下一句</h3>
+            <p className="mt-2 text-sm leading-6 text-slate-700">
+              右側草稿檢查過後，不要叫新手手動建立檔案。示範時可以複製這句，讓 Codex 依 skill-creator 流程完成建立與驗證。
+            </p>
+            <div className="mt-3 rounded-xl bg-white p-3 text-sm leading-6 text-slate-800 ring-1 ring-emerald-100">
+              請使用 skill-creator skill，把上方草稿建立成一個 Codex skill；建立前先確認使用案例，建立後請驗證格式，並列出我需要人工檢查的地方。
+            </div>
+          </Card>
         </div>
       </div>
     </div>
