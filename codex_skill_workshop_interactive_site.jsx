@@ -128,7 +128,7 @@ const rubric = [
 
 const narrationScripts = {
   overview:
-    "歡迎來到解放你的雙手，Codex Desktop 新手操作工作坊。這堂課不談技術架構，也不要求你寫程式。你要學的是：怎麼把一件常常重複的工作，交給 Codex 協助整理、建立檔案、修改內容、檢查結果，最後變成下次也能重複使用的流程。請先記住三件事：第一，Codex 可以在你指定的資料夾裡工作；第二，Codex 會提出修改，你要先檢查再接受；第三，遇到登入、上傳、敏感資料或高風險操作時，必須由你本人確認。完成本頁後，你要能說出 Codex Desktop 能幫你做哪些操作，以及這堂課最後會完成什麼成果。",
+    "歡迎來到解放你的雙手-Codex x Skills應用工作坊。這堂課不談技術架構，也不要求你寫程式。你要學的是：怎麼把一件常常重複的工作，交給 Codex 協助整理、建立檔案、修改內容、檢查結果，最後變成下次也能重複使用的流程。請先記住三件事：第一，Codex 可以在你指定的資料夾裡工作；第二，Codex 會提出修改，你要先檢查再接受；第三，遇到登入、上傳、敏感資料或高風險操作時，必須由你本人確認。完成本頁後，你要能說出 Codex Desktop 能幫你做哪些操作，以及這堂課最後會完成什麼成果。",
   desktop:
     "這一頁先回答新手最重要的問題：Codex Desktop 到底能做什麼？它可以讀你指定資料夾中的檔案，幫你建立或修改教材、報告、網頁與檢查清單；也可以依你的要求啟動本機網頁、跑檢查、整理錯誤訊息，並在需要時打開瀏覽器協助確認畫面。接著才認識介面：Project 是工作資料夾，Threads 是不同任務，Composer 是輸入任務的地方，Review 或 diff 是檢查修改結果的位置。請記住基本口訣：先選乾淨資料夾，再下小任務，先看修改，再決定是否接受。",
   basics:
@@ -1268,10 +1268,10 @@ export default function CodexSkillWorkshopSite() {
           <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
             <div>
               <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-indigo-50 px-3 py-1 text-sm font-semibold text-indigo-700 ring-1 ring-indigo-100">
-                <Sparkles className="h-4 w-4" /> Codex Desktop 新手操作工作坊
+                <Sparkles className="h-4 w-4" /> 解放你的雙手-Codex x Skills應用工作坊
               </div>
               <h1 className="max-w-4xl text-3xl font-black tracking-tight text-slate-950 md:text-5xl">
-                用 Codex Desktop 把重複工作變成可檢查流程
+                解放你的雙手-Codex x Skills應用工作坊
               </h1>
               <p className="mt-4 max-w-3xl text-base leading-7 text-slate-600 md:text-lg">
                 這是一份可自學的互動式教材，先帶你認識 Codex Desktop 能做哪些操作，再用成果報告與備課案例練習：選資料夾、下任務、看修改、要求修正、保存版本。Skill 只放在最後，作為把成熟流程保存下來的延伸。
